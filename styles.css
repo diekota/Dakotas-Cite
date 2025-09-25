@@ -18,6 +18,10 @@ p {
     color: #333;
 }
 
+.space {
+    margin-top: 40px;
+}
+
 img {
     border-radius: 50%;
     width: 310px;
