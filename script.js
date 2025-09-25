@@ -1,5 +1,5 @@
 // ======================
-// Random background helper (used on About page)
+// Random background helper (About page)
 // ======================
 const colors = ["#f0f8ff", "#ffe4e1", "#e6e6fa", "#f5f5dc", "#d3ffce"];
 function applyRandomBackground() {
@@ -7,89 +7,93 @@ function applyRandomBackground() {
   document.body.style.backgroundColor = randomColor;
 }
 
-// ======================
-// SETTINGS / DARK MODE (About page only)
-// ======================
-(function setupSettingsMenu() {
-  const settingsToggle = document.getElementById("settingsToggle");
-  const settingsMenu   = document.getElementById("settingsMenu");
-  const menuDarkMode   = document.getElementById("menuDarkMode");
-  const menuRandomBg   = document.getElementById("menuRandomBg");
+document.addEventListener("DOMContentLoaded", () => {
 
-  // If these don't exist (e.g., on login.html), skip this whole block
-  if (!settingsToggle || !settingsMenu || !menuDarkMode || !menuRandomBg) return;
+  // ======================
+  // SETTINGS / DARK MODE (About page only)
+  // ======================
+  (function setupSettingsMenu() {
+    const settingsToggle = document.getElementById("settingsToggle");
+    const settingsMenu   = document.getElementById("settingsMenu");
+    const menuDarkMode   = document.getElementById("menuDarkMode");
+    const menuRandomBg   = document.getElementById("menuRandomBg");
 
-  function syncDarkModeLabel() {
-    menuDarkMode.textContent = document.body.classList.contains("dark-mode")
-      ? "Disable Dark Mode"
-      : "Enable Dark Mode";
-  }
+    // If these don't exist (e.g., on login.html), skip this whole block
+    if (!settingsToggle || !settingsMenu || !menuDarkMode || !menuRandomBg) return;
 
-  settingsToggle.addEventListener("click", () => {
-    const isOpen = settingsMenu.classList.toggle("open");
-    settingsToggle.setAttribute("aria-expanded", String(isOpen));
-    settingsMenu.setAttribute("aria-hidden", String(!isOpen));
-  });
+    function syncDarkModeLabel() {
+      menuDarkMode.textContent = document.body.classList.contains("dark-mode")
+        ? "Disable Dark Mode"
+        : "Enable Dark Mode";
+    }
 
-  document.addEventListener("click", (e) => {
-    const clickedInside = e.target.closest(".settings");
-    if (!clickedInside && settingsMenu.classList.contains("open")) {
+    settingsToggle.addEventListener("click", () => {
+      const isOpen = settingsMenu.classList.toggle("open");
+      settingsToggle.setAttribute("aria-expanded", String(isOpen));
+      settingsMenu.setAttribute("aria-hidden", String(!isOpen));
+    });
+
+    document.addEventListener("click", (e) => {
+      const clickedInside = e.target.closest(".settings");
+      if (!clickedInside && settingsMenu.classList.contains("open")) {
+        settingsMenu.classList.remove("open");
+        settingsToggle.setAttribute("aria-expanded", "false");
+        settingsMenu.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    syncDarkModeLabel();
+
+    menuDarkMode.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      syncDarkModeLabel();
       settingsMenu.classList.remove("open");
       settingsToggle.setAttribute("aria-expanded", "false");
       settingsMenu.setAttribute("aria-hidden", "true");
-    }
-  });
+    });
 
-  syncDarkModeLabel();
+    menuRandomBg.addEventListener("click", () => {
+      applyRandomBackground();
+      settingsMenu.classList.remove("open");
+      settingsToggle.setAttribute("aria-expanded", "false");
+      settingsMenu.setAttribute("aria-hidden", "true");
+    });
+  })();
 
-  menuDarkMode.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    syncDarkModeLabel();
-    settingsMenu.classList.remove("open");
-    settingsToggle.setAttribute("aria-expanded", "false");
-    settingsMenu.setAttribute("aria-hidden", "true");
-  });
+  // ======================
+  // SIMPLE LOGIN (Login page only)
+  // ======================
+  (function setupLogin() {
+    const form = document.getElementById("loginForm");
+    if (!form) return; // not on login.html
 
-  menuRandomBg.addEventListener("click", () => {
-    applyRandomBackground();
-    settingsMenu.classList.remove("open");
-    settingsToggle.setAttribute("aria-expanded", "false");
-    settingsMenu.setAttribute("aria-hidden", "true");
-  });
-})();
+    // Hard-coded users (for fun, not secure)
+    const users = [
+      { username: "Alyssa",  password: "ILD" },
+      { username: "Dakota",  password: "ILD" },
+      { username: "Zoe",     password: "ILD" },
+      { username: "Emmie",   password: "ILD" },
+      { username: "Ashlynn", password: "ILD" },
+      { username: "Claire",  password: "ILD" },
+    ];
 
-// ======================
-// SIMPLE LOGIN (Login page only)
-// ======================
-(function setupLogin() {
-  const form = document.getElementById("loginForm");
-  if (!form) return; // not on login.html
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const u = document.getElementById("username").value.trim();
+      const p = document.getElementById("password").value;
+      const error = document.getElementById("error");
 
-  // Hard-coded users (for fun, not secure)
-  const users = [
-    {username: "Alyssa", password: "ILD"},
-    {username: "Dakota", password: "ILD"},
-    {username: "Zoe", password: "ILD"},
-    {username: "Emmie", password: "ILD"},
-    {username: "Ashlynn", password: "ILD"},
-    {username: "Claire", password: "ILD"},
-  ];
+      const found = users.find(
+        user => user.username.toLowerCase() === u.toLowerCase() && user.password === p
+      );
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const u = document.getElementById("username").value.trim();
-    const p = document.getElementById("password").value;
-    const error = document.getElementById("error");
+      if (found) {
+        sessionStorage.setItem("loggedIn", "true");
+        window.location.href = "about.html"; // make sure filename matches on server
+      } else {
+        error.textContent = "Invalid username or password!";
+      }
+    });
+  })();
 
-    const found = users.find(
-      user => user.username.toLowerCase() === u.toLowerCase() && user.password === p
-    );
-
-    if (found) {
-      sessionStorage.setItem("loggedIn", "true");
-      window.location.href = "about.html"; // make sure this filename matches your file
-    } else {
-      error.textContent = "Invalid username or password!";
-    }
-  });
-})();
+});
