@@ -8,24 +8,20 @@ function applyRandomBackground() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
   // ======================
   // SETTINGS / DARK MODE (About page only)
   // ======================
-  (function setupSettingsMenu() {
-    const settingsToggle = document.getElementById("settingsToggle");
-    const settingsMenu   = document.getElementById("settingsMenu");
-    const menuDarkMode   = document.getElementById("menuDarkMode");
-    const menuRandomBg   = document.getElementById("menuRandomBg");
+  const settingsToggle = document.getElementById("settingsToggle");
+  const settingsMenu   = document.getElementById("settingsMenu");
+  const menuDarkMode   = document.getElementById("menuDarkMode");
+  const menuRandomBg   = document.getElementById("menuRandomBg");
 
-    // If these don't exist (e.g., on login.html), skip this whole block
-    if (!settingsToggle || !settingsMenu || !menuDarkMode || !menuRandomBg) return;
-
-    function syncDarkModeLabel() {
+  if (settingsToggle && settingsMenu && menuDarkMode && menuRandomBg) {
+    const syncDarkModeLabel = () => {
       menuDarkMode.textContent = document.body.classList.contains("dark-mode")
         ? "Disable Dark Mode"
         : "Enable Dark Mode";
-    }
+    };
 
     settingsToggle.addEventListener("click", () => {
       const isOpen = settingsMenu.classList.toggle("open");
@@ -58,16 +54,13 @@ document.addEventListener("DOMContentLoaded", () => {
       settingsToggle.setAttribute("aria-expanded", "false");
       settingsMenu.setAttribute("aria-hidden", "true");
     });
-  })();
+  }
 
   // ======================
   // SIMPLE LOGIN (Login page only)
   // ======================
-  (function setupLogin() {
-    const form = document.getElementById("loginForm");
-    if (!form) return; // not on login.html
-
-    // Hard-coded users (for fun, not secure)
+  const form = document.getElementById("loginForm");
+  if (form) {
     const users = [
       { username: "Alyssa",  password: "ILD" },
       { username: "Dakota",  password: "ILD" },
@@ -89,11 +82,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (found) {
         sessionStorage.setItem("loggedIn", "true");
-        window.location.href = "about.html"; // make sure filename matches on server
+        window.location.href = "about.html";
       } else {
         error.textContent = "Invalid username or password!";
       }
     });
-  })();
-
+  }
 });
