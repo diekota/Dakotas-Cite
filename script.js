@@ -1,20 +1,30 @@
-// ---- Helpers you already used ----
+// ======================
+// Random background helper (used on About page)
+// ======================
 const colors = ["#f0f8ff", "#ffe4e1", "#e6e6fa", "#f5f5dc", "#d3ffce"];
 function applyRandomBackground() {
   const randomColor = colors[Math.floor(Math.random() * colors.length)];
   document.body.style.backgroundColor = randomColor;
 }
 
+// ======================
+// SETTINGS / DARK MODE (About page only)
+// ======================
+(function setupSettingsMenu() {
+  const settingsToggle = document.getElementById("settingsToggle");
+  const settingsMenu   = document.getElementById("settingsMenu");
+  const menuDarkMode   = document.getElementById("menuDarkMode");
+  const menuRandomBg   = document.getElementById("menuRandomBg");
 
+  // If these don't exist (e.g., on login.html), skip this whole block
+  if (!settingsToggle || !settingsMenu || !menuDarkMode || !menuRandomBg) return;
 
-// settings drop down toggles
-// settings drop down toggles
-const settingsToggle = document.getElementById("settingsToggle");
-const settingsMenu   = document.getElementById("settingsMenu");
-const menuDarkMode   = document.getElementById("menuDarkMode");
-const menuRandomBg   = document.getElementById("menuRandomBg");
+  function syncDarkModeLabel() {
+    menuDarkMode.textContent = document.body.classList.contains("dark-mode")
+      ? "Disable Dark Mode"
+      : "Enable Dark Mode";
+  }
 
-if (settingsToggle && settingsMenu && menuDarkMode && menuRandomBg) {
   settingsToggle.addEventListener("click", () => {
     const isOpen = settingsMenu.classList.toggle("open");
     settingsToggle.setAttribute("aria-expanded", String(isOpen));
@@ -30,13 +40,6 @@ if (settingsToggle && settingsMenu && menuDarkMode && menuRandomBg) {
     }
   });
 
-  function syncDarkModeLabel() {
-    if (document.body.classList.contains("dark-mode")) {
-      menuDarkMode.textContent = "Disable Dark Mode";
-    } else {
-      menuDarkMode.textContent = "Enable Dark Mode";
-    }
-  }
   syncDarkModeLabel();
 
   menuDarkMode.addEventListener("click", () => {
@@ -53,34 +56,40 @@ if (settingsToggle && settingsMenu && menuDarkMode && menuRandomBg) {
     settingsToggle.setAttribute("aria-expanded", "false");
     settingsMenu.setAttribute("aria-hidden", "true");
   });
-}
+})();
 
+// ======================
+// SIMPLE LOGIN (Login page only)
+// ======================
+(function setupLogin() {
+  const form = document.getElementById("loginForm");
+  if (!form) return; // not on login.html
 
-
-const users = [
+  // Hard-coded users (for fun, not secure)
+  const users = [
     {username: "Alyssa", password: "ILD"},
     {username: "Dakota", password: "ILD"},
     {username: "Zoe", password: "ILD"},
     {username: "Emmie", password: "ILD"},
     {username: "Ashlynn", password: "ILD"},
     {username: "Claire", password: "ILD"},
-];
+  ];
 
-const form = document.getElementById("loginForm");
-if (form) {
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const u = document.getElementById("username").value.trim();
-        const p = document.getElementById("password").value;
-        const error = document.getElementById("error");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const u = document.getElementById("username").value.trim();
+    const p = document.getElementById("password").value;
+    const error = document.getElementById("error");
 
-        const found = users.find(user => user.username === u && user.password === p);
+    const found = users.find(
+      user => user.username.toLowerCase() === u.toLowerCase() && user.password === p
+    );
 
-        if (found) {
-            sessionStorage.setItem("loggedIn", "true");
-            window.location.href = "about.html"
-        } else  {
-            error.textContent = "Invalid username or password!";
-        }
-    });
-}
+    if (found) {
+      sessionStorage.setItem("loggedIn", "true");
+      window.location.href = "about.html"; // make sure this filename matches your file
+    } else {
+      error.textContent = "Invalid username or password!";
+    }
+  });
+})();
