@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <script>
+     // if no login flag in sessionStorage, bounce back
+     if (!sessionStorage.getItem("loggedIn")) {
+     window.location.href = "login.html";
+        }
+    </script>
+
 
    <div class="container">
     <h1>Why hello there i see you stumbled upon here</h1>
@@ -25,6 +32,10 @@
     </ul>
    </div>
 
+     <!-- Logout button -->
+  <button onclick="sessionStorage.clear(); window.location.href='login.html';">
+    Logout
+  </button>
 
    <div class="settings">
     <button id="settingsToggle" aria-haspopup="true" aria-expanded="false">Settings</button>
