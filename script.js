@@ -62,12 +62,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");
   if (form) {
     const users = [
-      { username: "Alyssa",  password: "ILD" },
-      { username: "Dakota",  password: "ILD" },
-      { username: "Zoe",     password: "ILD" },
-      { username: "Emmie",   password: "ILD" },
-      { username: "Ashlynn", password: "ILD" },
-      { username: "Claire",  password: "ILD" },
+      { username: "Alyssa",  password: "Rodgers" },
+      { username: "Dakota",  password: "Garman" },
+      { username: "Zoe",     password: "Rasnake" },
+      { username: "Emmie",   password: "Rasnake" },
+      { username: "Ashlynn", password: "Kief" },
+      { username: "Claire",  password: "Parsley" },
     ];
 
     form.addEventListener("submit", (e) => {
