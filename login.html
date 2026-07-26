@@ -1,21 +1,842 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CMSC131 Drill Booklet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,600&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cover-blue: #2B4570;
+    --cover-blue-dark: #17273D;
+    --cover-blue-mid: #35547F;
+    --paper: #FAF6EC;
+    --paper-line: rgba(43, 69, 112, 0.14);
+    --ink: #1F2A36;
+    --pencil: #6B7280;
+    --red-pen: #A6332B;
+    --red-pen-dark: #7E2620;
+    --moss: #3F6B4E;
+    --moss-dark: #2E5038;
+    --cream-chip: #EFE8D6;
+    --shadow: rgba(23, 39, 61, 0.28);
+  }
+
+  * { box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+  }
+
+  .booklet {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 18px 16px 40px;
+  }
+
+  /* ---------- COVER ---------- */
+  .cover {
+    background: linear-gradient(160deg, var(--cover-blue) 0%, var(--cover-blue-dark) 100%);
+    border-radius: 10px 10px 4px 4px;
+    padding: 22px 26px 18px;
+    color: #F4EEDD;
+    position: relative;
+    box-shadow: 0 10px 24px var(--shadow);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .cover::after {
+    content: "";
+    position: absolute;
+    left: 14px; right: 14px; bottom: 8px;
+    height: 1px;
+    background: rgba(244, 238, 221, 0.25);
+  }
+  .cover-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #C9D5E6;
+    margin: 0 0 6px;
+  }
+  .cover-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(24px, 4.2vw, 32px);
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .cover-sub {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 14px;
+    color: #D8E0EE;
+    margin: 0 0 16px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .stat-tile {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(244,238,221,0.16);
+    border-radius: 6px;
+    padding: 8px 12px;
+    min-width: 84px;
+  }
+  .stat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1;
+    color: #F4EEDD;
+  }
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #B7C4D9;
+    margin-top: 4px;
+  }
+
+  /* ---------- CATEGORY TABS ---------- */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 12px 4px 4px;
+    margin-bottom: 4px;
+    scrollbar-width: thin;
+  }
+  .tab {
+    flex: 0 0 auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 7px 12px;
+    border-radius: 5px;
+    border: 1px solid var(--paper-line);
+    background: var(--cream-chip);
+    color: var(--cover-blue-dark);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+  .tab:hover { background: #E7DEC6; }
+  .tab:focus-visible, button:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--cover-blue);
+    outline-offset: 2px;
+  }
+  .tab.active {
+    background: var(--cover-blue);
+    color: #F4EEDD;
+    border-color: var(--cover-blue-dark);
+  }
+  .tab .tab-count {
+    opacity: 0.7;
+    margin-left: 4px;
+  }
+
+  /* ---------- PAGE (question card) ---------- */
+  .page {
+    background: var(--paper);
+    border: 1px solid var(--paper-line);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 26px 26px 22px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 31px,
+      var(--paper-line) 32px
+    );
+    background-position: 0 6px;
+    min-height: 360px;
+    position: relative;
+  }
+
+  .q-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--pencil);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 10px;
+  }
+
+  .q-prompt {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 0 0 16px;
+    white-space: pre-wrap;
+  }
+  .q-prompt.code {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 14.5px;
+    background: rgba(43,69,112,0.05);
+    padding: 12px 14px;
+    border-radius: 6px;
+    border-left: 3px solid var(--cover-blue);
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 130px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 32px;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    resize: vertical;
+    padding: 0;
+    margin-top: 2px;
+  }
+  textarea::placeholder { color: #A9A08A; font-style: italic; }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  button {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.08s ease, background 0.15s ease;
+  }
+  button:active { transform: translateY(1px); }
+  .btn-primary {
+    background: var(--cover-blue);
+    color: #F4EEDD;
+  }
+  .btn-primary:hover { background: var(--cover-blue-dark); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--cover-blue-dark);
+    border: 1px solid var(--paper-line);
+  }
+  .btn-ghost:hover { background: rgba(43,69,112,0.06); }
+
+  /* ---------- ANSWER REVEAL ---------- */
+  .reveal {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--paper-line);
+    animation: fadeUp 0.25s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--red-pen);
+    margin: 0 0 8px;
+    font-weight: 600;
+  }
+  .reveal-body {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink);
+    white-space: pre-wrap;
+    background: rgba(166,51,43,0.045);
+    border-radius: 6px;
+    padding: 12px 14px;
+  }
+
+  .grade-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .stamp-btn {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 10px 20px;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .stamp-btn:active { transform: scale(0.94) rotate(-2deg); }
+  .stamp-got-it {
+    background: transparent;
+    border-color: var(--moss);
+    color: var(--moss-dark);
+  }
+  .stamp-got-it:hover { background: rgba(63,107,78,0.09); }
+  .stamp-missed {
+    background: transparent;
+    border-color: var(--red-pen);
+    color: var(--red-pen-dark);
+  }
+  .stamp-missed:hover { background: rgba(166,51,43,0.08); }
+
+  .stamp-feedback {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 6px 14px;
+    border-radius: 4px;
+    display: inline-block;
+    transform: rotate(-4deg);
+    animation: stampIn 0.28s cubic-bezier(.36,1.6,.4,1);
+    border: 2px solid currentColor;
+  }
+  @keyframes stampIn {
+    0% { opacity: 0; transform: rotate(-4deg) scale(1.6); }
+    100% { opacity: 1; transform: rotate(-4deg) scale(1); }
+  }
+  .stamp-feedback.correct { color: var(--moss-dark); }
+  .stamp-feedback.wrong { color: var(--red-pen-dark); }
+
+  .box-indicator {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--pencil);
+    margin-top: 14px;
+  }
+  .box-dots { display: inline-flex; gap: 3px; vertical-align: middle; margin-left: 6px; }
+  .box-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--paper-line);
+    display: inline-block;
+  }
+  .box-dot.filled { background: var(--cover-blue); }
+
+  /* ---------- FOOTER BAR ---------- */
+  .footer-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .reset-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--pencil);
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .reset-link:hover { color: var(--red-pen); }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--pencil);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--pencil);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Login</h1>
-        <form id="loginForm">
-            <input type="text" id="username" placeholder="Username" required><br><br>
-            <input type="password" id="password" placeholder="Password" required><br><br>
-            <button type="submit">Login</button>
-        </form>
-        <p id="error" style="color: red;"></p>
-    </div>
-    <script src="script.js?v=3"></script>
+
+<div class="booklet" id="app">
+  <div class="loading">loading your booklet…</div>
+</div>
+
+<script>
+(function() {
+
+  // ---------------- QUESTION BANK ----------------
+  const CATEGORIES = [
+    { id: "term", label: "Terminology & Binary" },
+    { id: "ops", label: "Operators & Conditionals" },
+    { id: "loops", label: "Loops" },
+    { id: "strings", label: "String vs StringBuffer" },
+    { id: "arrays", label: "Arrays & 2D" },
+    { id: "oop", label: "OOP: static & constructors" },
+    { id: "copies", label: "Shallow / Deep Copy" },
+    { id: "recursion", label: "Recursion" },
+    { id: "interfaces", label: "Interfaces & ArrayList" },
+    { id: "exceptions", label: "Exceptions & JUnit" },
+  ];
+
+  const QUESTIONS = [
+    // TERMINOLOGY
+    { id:"term1", cat:"term", type:"def", q:"What does CPU stand for, and what does it do?", a:"Central Processing Unit — the processor that executes instructions and carries out computations." , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+    { id:"term2", cat:"term", type:"def", q:"Define an I/O device and give two examples.", a:"Hardware used for input or output. Examples: keyboard/mouse (input), monitor (output), disk (both)." , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+    { id:"term3", cat:"term", type:"def", q:"What does IDE stand for, and what does it typically bundle together?", a:"Integrated Development Environment — bundles a code editor, compiler/build tools, and a debugger in one program." , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+    { id:"term4", cat:"term", type:"def", q:"What does CVS stand for?", a:"Concurrent Versions System — a version control system." , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+    { id:"term5", cat:"term", type:"def", q:"Explain the difference between machine code and bytecode.", a:"Machine code is binary instructions the CPU executes directly (platform-specific). Bytecode is intermediate code (like .class files) that the JVM interprets or JIT-compiles — that's what javac actually produces, not machine code." , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+    { id:"term6", cat:"term", type:"def", q:"What is virtual memory?", a:"A memory-management technique that uses disk space to simulate extra RAM, letting programs use more memory than is physically installed." , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+    { id:"term7", cat:"term", type:"def", q:"How many bits are in a byte? How many bytes in a kilobyte?", a:"8 bits per byte. 1024 bytes per kilobyte." , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+    { id:"term8", cat:"term", type:"trace", q:"What is the smallest and largest value a 4-bit unsigned number can represent?", a:"Smallest: 0 (0000). Largest: 15 (1111)." , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+    { id:"term9", cat:"term", type:"trace", q:"Convert 78 (base 10) into binary.", a:"1001110" , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+    { id:"term10", cat:"term", type:"trace", q:"Convert the binary number 1011010 into base 10.", a:"90" , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+
+    // OPERATORS
+    { id:"ops1", cat:"ops", type:"trace", q:"Is `int x = 34.7;` valid Java? Why or why not?", a:"No — you can't implicitly narrow a double literal to int without an explicit cast. This is a compile error." , pg:"Integer & Floating Point Types, pp. 7–10" },
+    { id:"ops2", cat:"ops", type:"trace", q:"Is `double y = 12;` valid Java?", a:"Yes — an int widens to a double automatically." , pg:"Integer & Floating Point Types, pp. 7–10" },
+    { id:"ops3", cat:"ops", type:"trace", q:"Is `boolean q = 17 < 25;` valid Java?", a:"Yes — the expression evaluates to a boolean (true), and that's assigned to q." , pg:"Boolean Types p.10 / Conditional Statements p.16" },
+    { id:"ops4", cat:"ops", type:"trace", q:"Evaluate: 9 - 15 * 6 / 11 + 4", a:"15*6=90, 90/11=8 (integer division truncates), 9-8+4=5." , pg:"Expressions p.30 / Precedence p.35" },
+    { id:"ops5", cat:"ops", type:"trace", q:"Evaluate: 75 % 7", a:"5  (75 = 10*7 + 5)" , pg:"Expressions p.30" },
+    { id:"ops6", cat:"ops", type:"def", q:"Name the three logical operators in Java.", a:"&& (and), || (or), ! (not)." , pg:"Logical Operators p.17" },
+    { id:"ops7", cat:"ops", type:"trace", q:"Evaluate: ((3<5) && !(1>14) && (-5<-15)) || ((6==6) && !(2==2))", a:"First part: true && true && false = false. Second part: true && !(false) = true && true = true. Overall: false || true = true." , pg:"Logical Operators p.17 / Short-Circuiting p.36" },
+    { id:"ops8", cat:"ops", type:"def", q:"What is roundoff error and why does it happen?", a:"Small inaccuracies from representing decimal fractions in binary floating point — some decimals (like 0.1) can't be represented exactly, so results like 0.1 + 0.2 may not exactly equal 0.3." , pg:"Floating-Point Calculations, pp. 37–38" },
+
+    // LOOPS
+    { id:"loop1", cat:"loops", type:"def", q:"What's the difference between continue and break in a loop?", a:"break exits the loop entirely. continue skips the rest of the current iteration and moves on to the next one, without exiting the loop." , pg:"Breaking and Continuing p.54" },
+    { id:"loop2", cat:"loops", type:"code", q:"Write a for loop that sums the integers from 1 to n.", a:"int sum = 0;\nfor (int i = 1; i <= n; i++) {\n  sum += i;\n}" , pg:"For Loops p.26" },
+    { id:"loop3", cat:"loops", type:"def", q:"When does a do-while loop's body run even if the condition starts out false?", a:"Always — a do-while checks the condition AFTER running the body once, so the body executes at least one time no matter what, unlike a while loop which checks first." , pg:"Do-While Loops p.24" },
+    { id:"loop4", cat:"loops", type:"code", q:"Write code that reads integers from Scanner until a negative value is entered, summing only the non-negative ones.", a:"Scanner sc = new Scanner(System.in);\nint sum = 0;\nint x = sc.nextInt();\nwhile (x >= 0) {\n  sum += x;\n  x = sc.nextInt();\n}" , pg:"While Loops p.22" },
+    { id:"loop5", cat:"loops", type:"code", q:"Write code that finds the largest of 10 user-entered integers.", a:"int max = Integer.MIN_VALUE;\nfor (int i = 0; i < 10; i++) {\n  int x = sc.nextInt();\n  if (x > max) max = x;\n}" , pg:"For Loops p.26" },
+    { id:"loop6", cat:"loops", type:"trace", q:"Trace: what does a nested loop printing i*j for i,j each in 1..3 output (row per i)?", a:"1 2 3\n2 4 6\n3 6 9" , pg:"Nested Loops p.27" },
+    { id:"loop7", cat:"loops", type:"code", q:"Write a loop using continue to print 1 to 20 while skipping multiples of 3.", a:"for (int i = 1; i <= 20; i++) {\n  if (i % 3 == 0) continue;\n  System.out.println(i);\n}" , pg:"Breaking and Continuing p.54" },
+    { id:"loop8", cat:"loops", type:"def", q:"Why might you use break instead of just restructuring the loop's boolean condition?", a:"break lets you exit immediately from deep inside nested logic (e.g., after finding a match) without complicating the loop's overall condition with extra flags." , pg:"Breaking and Continuing p.54" },
+
+    // STRINGS
+    { id:"str1", cat:"strings", type:"def", q:"Why is String immutable but StringBuffer mutable?", a:"String methods like concatenation always create a brand-new String object. StringBuffer has methods like append() that modify the same object's internal data in place." , pg:"Immutability of Strings p.12 / StringBuffers p.40" },
+    { id:"str2", cat:"strings", type:"trace", q:"What does `strOne += \"There\";` actually do to the strOne reference?", a:"It creates a brand-new String and reassigns strOne to point to it. It does NOT modify the original String object — any other reference (like strTwo) still points to the old, unchanged object." , pg:"Immutability of Strings p.12 / String Concatenation p.12" },
+    { id:"str3", cat:"strings", type:"trace", q:"What does `sbOne.append(\"There\");` do differently from the String += case?", a:"It modifies the existing StringBuffer object in place. Any other reference (like sbTwo) pointing to that same object will see the appended text too." , pg:"StringBuffers p.40" },
+    { id:"str4", cat:"strings", type:"code", q:"Write an expression to check whether two String references point to the exact same object.", a:"x == y" , pg:"String Comparison p.12" },
+    { id:"str5", cat:"strings", type:"def", q:"What operator concatenates two Strings?", a:"+ (plus)" , pg:"String Concatenation p.12" },
+    { id:"str6", cat:"strings", type:"def", q:"Is String's length() a method or a field? What about an array's .length?", a:"String.length() is a method (needs parentheses). An array's .length is a field (no parentheses) — this trips people up constantly." , pg:"String Methods p.61 (compare Arrays p.68 for .length as a field)" },
+    { id:"str7", cat:"strings", type:"def", q:"What escape sequence produces a newline in a String literal?", a:"\\n" , pg:"String Types p.10" },
+    { id:"str8", cat:"strings", type:"def", q:"What does StringBuffer's .capacity() tell you, and why might it be larger than the string's current length?", a:"It reports the allocated buffer size behind the scenes. Java over-allocates room so the buffer can grow via append() without reallocating memory every single time." , pg:"StringBuffers p.40" },
+
+    // ARRAYS
+    { id:"arr1", cat:"arrays", type:"def", q:"If a method is passed an array and changes element values inside it, does the caller see the change? Why?", a:"Yes. Arrays are objects — the reference is passed by value, but that reference points to the same array in memory, so mutating its contents is visible to the caller." , pg:"Arrays p.68 / Pass By Value p.39" },
+    { id:"arr2", cat:"arrays", type:"def", q:"Can a method resize an array so the caller's original variable points to the bigger array?", a:"No. The method can create a new, bigger array internally, but the caller's reference is a separate variable — only returning the new array and reassigning it in the caller would change what the caller sees." , pg:"Resizing Arrays p.71" },
+    { id:"arr3", cat:"arrays", type:"code", q:"Write a method setTo5(int[] arr) that sets every element of the array to 5.", a:"public static void setTo5(int[] arr) {\n  for (int i = 0; i < arr.length; i++) {\n    arr[i] = 5;\n  }\n}" , pg:"Arrays p.68 / Arrays as Parameters p.73" },
+    { id:"arr4", cat:"arrays", type:"code", q:"Write code to allocate a ragged 2D int array where row i has i+1 slots, for rows 0 through 49.", a:"int[][] arr = new int[50][];\nfor (int i = 0; i < 50; i++) {\n  arr[i] = new int[i + 1];\n}" , pg:"More on Two-Dimensional Arrays p.98" },
+    { id:"arr5", cat:"arrays", type:"code", q:"Write a method that returns the sum of all values in a 2D int array.", a:"public static int sum2D(int[][] arr) {\n  int total = 0;\n  for (int[] row : arr) {\n    for (int val : row) {\n      total += val;\n    }\n  }\n  return total;\n}" , pg:"More on Two-Dimensional Arrays p.98" },
+    { id:"arr6", cat:"arrays", type:"code", q:"Write a method that returns a deep (distinct) copy of a 2D int array.", a:"public static int[][] deepCopy(int[][] arr) {\n  int[][] copy = new int[arr.length][];\n  for (int i = 0; i < arr.length; i++) {\n    copy[i] = Arrays.copyOf(arr[i], arr[i].length);\n  }\n  return copy;\n}" , pg:"More on Two-Dimensional Arrays p.98 / Copying Arrays p.69" },
+    { id:"arr7", cat:"arrays", type:"def", q:"How would summing a 2D structure change if you used ArrayList<ArrayList<Integer>> instead of int[][]?", a:"Same nested-loop idea, but you'd use enhanced for-each over each inner ArrayList<Integer>, and Java auto-unboxes each Integer to int when you add it to your running total." , pg:"ArrayLists p.99" },
+    { id:"arr8", cat:"arrays", type:"def", q:"What's the key difference between array.length and String's length()?", a:"array.length is a field, accessed with no parentheses. String's length() is a method, accessed with parentheses. Mixing these up is a very common syntax error." , pg:"Arrays p.68 / String Methods p.61" },
+
+    // OOP
+    { id:"oop1", cat:"oop", type:"def", q:"What's the difference between a static field/method and an instance field/method?", a:"static belongs to the class itself — shared across all objects, accessed via ClassName.member. Instance belongs to each individual object — every object gets its own separate copy of instance fields." , pg:"Introduction to Classes, pp. 46–50" },
+    { id:"oop2", cat:"oop", type:"def", q:"Why would a class have both a normal constructor and a copy constructor?", a:"The normal constructor builds a new object from raw starting values. A copy constructor builds a new, independent object that duplicates the state of an existing object of the same type — useful so callers can clone objects without knowing the internal fields." , pg:"Constructors p.48" },
+    { id:"oop3", cat:"oop", type:"code", q:"Write a copy constructor for a Rational class with int fields numer and denom.", a:"public Rational(Rational other) {\n  this.numer = other.numer;\n  this.denom = other.denom;\n}" , pg:"Constructors p.48" },
+    { id:"oop4", cat:"oop", type:"def", q:"Why is a method like getCatsEver() (returning how many Cat objects were ever made) declared static?", a:"It reports data tied to the class as a whole, not to any single Cat object, so it doesn't need — and shouldn't require — an instance to be called." , pg:"Introduction to Classes p.46" },
+    { id:"oop5", cat:"oop", type:"def", q:"What does toString() typically return, and when does Java call it implicitly?", a:"A human-readable String representation of the object. Java calls it implicitly during print()/println() and whenever the object is concatenated into a String with +." , pg:"“this” Keyword p.52 / .equals() method p.51" },
+    { id:"oop6", cat:"oop", type:"code", q:"Write a class Cat with instance fields name and lives, plus a static count of how many Cats have ever been created (incremented in the constructor).", a:"public class Cat {\n  private String name;\n  private int lives;\n  private static int catsEver = 0;\n\n  public Cat(String name, int lives) {\n    this.name = name;\n    this.lives = lives;\n    catsEver++;\n  }\n\n  public static int getCatsEver() {\n    return catsEver;\n  }\n}" , pg:"Introduction to Classes p.46 / Constructors p.48" },
+    { id:"oop7", cat:"oop", type:"def", q:"Why can't a static method directly call an instance method without an object reference?", a:"Instance methods act on a specific object's fields, and a static context has no implicit 'this' — there's no object to act on unless you explicitly provide a reference to one." , pg:"“this” Keyword p.52" },
+    { id:"oop8", cat:"oop", type:"def", q:"In terms of static vs. instance data, what do all objects of a class share, and what does each get its own copy of?", a:"All objects share the same static data (one copy total, tied to the class). Each object gets its own independent copy of instance data." , pg:"Introduction to Classes p.46" },
+
+    // COPIES
+    { id:"cop1", cat:"copies", type:"def", q:"What is a reference copy?", a:"A new variable that points to the exact same object as another — no new object is created, and changes made through either variable affect the same underlying data." , pg:"Copying Objects p.80" },
+    { id:"cop2", cat:"copies", type:"def", q:"What is a shallow copy?", a:"A new object is created and its fields are copied over — but if a field is itself a reference (like an array or another object), the copy still points to that SAME nested object as the original." , pg:"Copying Objects p.80" },
+    { id:"cop3", cat:"copies", type:"def", q:"What is a deep copy?", a:"A new object is created, and any reference-type fields are recursively copied too, so the copy shares nothing in memory with the original — fully independent." , pg:"Copying Objects p.80" },
+    { id:"cop4", cat:"copies", type:"code", q:"Write a method that returns a shallow copy of an array of StringBuffer objects.", a:"public static StringBuffer[] shallowCopy(StringBuffer[] arr) {\n  StringBuffer[] copy = new StringBuffer[arr.length];\n  for (int i = 0; i < arr.length; i++) {\n    copy[i] = arr[i];\n  }\n  return copy;\n}" , pg:"Copying Objects p.80 / Copying Arrays p.69" },
+    { id:"cop5", cat:"copies", type:"code", q:"Write a method that returns a deep copy of an array of StringBuffer objects (some positions may be null).", a:"public static StringBuffer[] deepCopy(StringBuffer[] arr) {\n  StringBuffer[] copy = new StringBuffer[arr.length];\n  for (int i = 0; i < arr.length; i++) {\n    copy[i] = (arr[i] == null) ? null : new StringBuffer(arr[i].toString());\n  }\n  return copy;\n}" , pg:"Copying Objects p.80 / Copying Arrays p.69" },
+    { id:"cop6", cat:"copies", type:"def", q:"Is there ever a good reason to deep-copy an array of references to immutable objects?", a:"Rarely, if ever — since immutable objects can't be changed, sharing references is already safe. A deep copy in that case just wastes memory without protecting anything." , pg:"Copying Objects p.80 / Immutable Classes p.64" },
+    { id:"cop7", cat:"copies", type:"def", q:"How do you make sure a class you're writing is truly immutable?", a:"Make all fields private and final, provide no setters, and don't expose any mutable internal field directly (return a defensive copy if a field is itself mutable, like an array)." , pg:"Immutable Classes p.64" },
+    { id:"cop8", cat:"copies", type:"trace", q:"If you shallow-copy an object and one of its fields is an array, what happens when you modify that array through the copy?", a:"The original object's array changes too — both objects' fields still point to the exact same array in memory after a shallow copy." , pg:"Copying Objects p.80 / Privacy Leak p.79" },
+
+    // RECURSION
+    { id:"rec1", cat:"recursion", type:"def", q:"What are the two essential parts of any correct recursive method?", a:"A base case (a condition that stops the recursion directly) and a recursive case (the method calling itself on a smaller/simpler version of the problem)." , pg:"Recursion p.85" },
+    { id:"rec2", cat:"recursion", type:"trace", q:"Trace doStuff(3), where doStuff(n) returns n if n<1, else returns 2*n + doStuff(n-1).", a:"doStuff(0)=0 (base case).\ndoStuff(1)=2*1+doStuff(0)=2+0=2\ndoStuff(2)=2*2+doStuff(1)=4+2=6\ndoStuff(3)=2*3+doStuff(2)=6+6=12\nFinal result: 12" , pg:"Recursion p.85 / More Recursion Examples p.89" },
+    { id:"rec3", cat:"recursion", type:"code", q:"Write a recursive factorial(int n).", a:"public static int factorial(int n) {\n  if (n <= 1) return 1;\n  return n * factorial(n - 1);\n}" , pg:"Recursion p.85" },
+    { id:"rec4", cat:"recursion", type:"code", q:"Write recursive findMax(int[] list, int front) returning the largest value from index front to the end.", a:"public static int findMax(int[] list, int front) {\n  if (front == list.length - 1) return list[front];\n  int restMax = findMax(list, front + 1);\n  return Math.max(list[front], restMax);\n}" , pg:"Recursive Array Methods p.93" },
+    { id:"rec5", cat:"recursion", type:"code", q:"Write a recursive method that prints an ArrayList<Float> backwards.", a:"public static void printBackwards(ArrayList<Float> list, int index) {\n  if (index < 0) return;\n  System.out.println(list.get(index));\n  printBackwards(list, index - 1);\n}\n// initial call: printBackwards(list, list.size() - 1)" , pg:"Recursive Array Methods p.93 / ArrayLists p.99" },
+    { id:"rec6", cat:"recursion", type:"code", q:"Write recursive sumArray(int[] arr, int index) that sums from index to the end, no loops.", a:"public static int sumArray(int[] arr, int index) {\n  if (index == arr.length) return 0;\n  return arr[index] + sumArray(arr, index + 1);\n}" , pg:"Recursive Array Methods p.93 / Zero-Length Arrays p.94" },
+    { id:"rec7", cat:"recursion", type:"code", q:"Write a recursive method to check whether a String is a palindrome.", a:"public static boolean isPalindrome(String s, int left, int right) {\n  if (left >= right) return true;\n  if (s.charAt(left) != s.charAt(right)) return false;\n  return isPalindrome(s, left + 1, right - 1);\n}" , pg:"Common Recursion Problems p.91" },
+    { id:"rec8", cat:"recursion", type:"def", q:"What typically goes wrong if you forget the base case (or it's unreachable)?", a:"Infinite recursion — the method keeps calling itself forever, eventually causing a StackOverflowError." , pg:"Recursion p.85" },
+
+    // INTERFACES
+    { id:"int1", cat:"interfaces", type:"trace", q:"If ShakesHands is an interface implemented by Student, is `ShakesHands x = new Student();` valid? Is `Student x = new ShakesHands();` valid?", a:"First is valid — an interface reference can point to any object of a class that implements it. Second is INVALID — you can never instantiate an interface directly with new." , pg:"Interfaces p.101" },
+    { id:"int2", cat:"interfaces", type:"code", q:"For a class Rational implementing Comparable<Rational>, write the compareTo signature and describe what it should return.", a:"public int compareTo(Rational other) { ... }\nReturns a negative number if this < other, 0 if equal, and a positive number if this > other." , pg:"The Comparable Interface p.106" },
+    { id:"int3", cat:"interfaces", type:"trace", q:"Given ArrayList<String> theList, does theList.add(100); compile?", a:"No — 100 is an int, not a String. Autoboxing bridges primitives to their matching wrapper class (int to Integer), not int to an unrelated type like String." , pg:"ArrayLists p.99 / Wrappers p.107" },
+    { id:"int4", cat:"interfaces", type:"trace", q:"If you build `new ArrayList(listOne)` from an existing ArrayList of StringBuffer objects and then modify one of those StringBuffers through the new list, does the original list see the change?", a:"Yes — the new ArrayList is a separate list object, but it holds copies of the same StringBuffer references. Mutating a shared StringBuffer through either list is visible in both." , pg:"ArrayLists p.99" },
+    { id:"int5", cat:"interfaces", type:"def", q:"Can a single class implement more than one interface at the same time?", a:"Yes — unlike single-class inheritance (extends), a class can implement any number of interfaces at once." , pg:"Interfaces p.101" },
+    { id:"int6", cat:"interfaces", type:"code", q:"Write an interface Animal with getName(), setName(String), and makeSound(), plus a Cat class implementing it.", a:"public interface Animal {\n  String getName();\n  void setName(String s);\n  String makeSound();\n}\n\npublic class Cat implements Animal {\n  private String name;\n  public Cat(String name) { this.name = name; }\n  public String getName() { return name; }\n  public void setName(String s) { name = s; }\n  public String makeSound() { return \"Meow\"; }\n}" , pg:"Interfaces p.101" },
+    { id:"int7", cat:"interfaces", type:"def", q:"Why does declaring `ShakesHands x;` and later assigning it Student, then Teacher, then Parent objects all compile?", a:"Because the declared type is the interface. Any object of a class that implements that interface is assignment-compatible with an interface-typed reference, regardless of which implementing class it is." , pg:"Interfaces p.101" },
+    { id:"int8", cat:"interfaces", type:"def", q:"What's the benefit of writing code against an interface type (like Comparable) instead of a specific class?", a:"Code written against the interface works with ANY class that implements it, without modification — enabling reusable, generic algorithms (e.g., a sort method that works on anything Comparable)." , pg:"Interfaces p.101 / The Comparable Interface p.106" },
+
+    // EXCEPTIONS + JUNIT
+    { id:"exc1", cat:"exceptions", type:"code", q:"Rewrite this so it doesn't crash: String str = null; int size; size = str.length();", a:"String str = null;\nint size;\ntry {\n  size = str.length();\n} catch (NullPointerException e) {\n  size = 0;\n}" , pg:"Exceptions — Introduction p.56" },
+    { id:"exc2", cat:"exceptions", type:"def", q:"When does a finally block execute?", a:"Always — whether the try block completes normally, throws an exception that gets caught, or throws one that doesn't get caught (it still runs before the exception propagates further)." , pg:"“Finally” Blocks p.60" },
+    { id:"exc3", cat:"exceptions", type:"code", q:"Write addTwoPositive(int a, int b) that throws an ArithmeticException with the message \"Non-positive integers sent!\" if either value isn't positive.", a:"public static int addTwoPositive(int a, int b) {\n  if (a <= 0 || b <= 0) {\n    throw new ArithmeticException(\"Non-positive integers sent!\");\n  }\n  return a + b;\n}" , pg:"Throwing Exceptions p.59" },
+    { id:"exc4", cat:"exceptions", type:"def", q:"If a try block throws an exception with no matching catch, does its finally block still run?", a:"Yes — the finally block still executes before the exception propagates up the call stack." , pg:"“Finally” Blocks p.60 / Exception Propagation p.58" },
+    { id:"exc5", cat:"exceptions", type:"def", q:"What does the @Test annotation mark in JUnit?", a:"A method that JUnit should run as an independent test case." , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+    { id:"exc6", cat:"exceptions", type:"code", q:"Write a JUnit assertion checking that a String equals an expected value.", a:"assertEquals(expected, actual);" , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+    { id:"exc7", cat:"exceptions", type:"def", q:"If one @Test method in a class fails its assertion, do the other @Test methods in that class still run?", a:"Yes — each @Test method runs independently. One failing test does not stop the others from running." , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+    { id:"exc8", cat:"exceptions", type:"code", q:"Write a JUnit assertion checking that two StringBuffer references point to the exact same object.", a:"assertSame(sbOne, sbTwo);" , pg:"Not in the notes PDF — this is UMD's own prep-page content" },
+  ];
+
+  const QUESTIONS_BY_ID = {};
+  QUESTIONS.forEach(q => QUESTIONS_BY_ID[q.id] = q);
+
+  const STORAGE_KEY = "quiz-progress";
+  const MAX_BOX = 5;
+
+  let progress = null; // { perQuestion: { id: {box, attempts, correct} }, global: {attempts, correct, streak, longest} }
+  let currentCat = "mixed";
+  let currentQuestion = null;
+  let revealed = false;
+
+  function defaultProgress() {
+    return { perQuestion: {}, global: { attempts: 0, correct: 0, streak: 0, longest: 0 } };
+  }
+
+  async function loadProgress() {
+    try {
+      const result = await window.storage.get(STORAGE_KEY, false);
+      if (result && result.value) {
+        return JSON.parse(result.value);
+      }
+      return defaultProgress();
+    } catch (e) {
+      return defaultProgress();
+    }
+  }
+
+  async function saveProgress() {
+    try {
+      await window.storage.set(STORAGE_KEY, JSON.stringify(progress), false);
+    } catch (e) {
+      console.error("storage save failed", e);
+    }
+  }
+
+  function getQBoxState(id) {
+    if (!progress.perQuestion[id]) {
+      progress.perQuestion[id] = { box: 1, attempts: 0, correct: 0 };
+    }
+    return progress.perQuestion[id];
+  }
+
+  function poolForCategory(catId) {
+    if (catId === "mixed") return QUESTIONS;
+    return QUESTIONS.filter(q => q.cat === catId);
+  }
+
+  function pickNextQuestion(catId) {
+    const pool = poolForCategory(catId);
+    if (pool.length === 0) return null;
+    // weight = inverse of box level squared, so lower boxes show much more often
+    const weights = pool.map(q => {
+      const state = getQBoxState(q.id);
+      return Math.pow(MAX_BOX + 1 - state.box, 2);
+    });
+    const total = weights.reduce((a, b) => a + b, 0);
+    let r = Math.random() * total;
+    for (let i = 0; i < pool.length; i++) {
+      r -= weights[i];
+      if (r <= 0) return pool[i];
+    }
+    return pool[pool.length - 1];
+  }
+
+  function masteredCount(catId) {
+    const pool = poolForCategory(catId);
+    return pool.filter(q => getQBoxState(q.id).box >= MAX_BOX).length;
+  }
+
+  function render() {
+    const app = document.getElementById("app");
+    const g = progress.global;
+    const accuracy = g.attempts > 0 ? Math.round((g.correct / g.attempts) * 100) : 0;
+    const totalMastered = masteredCount("mixed");
+
+    let tabsHtml = `<div class="tabs">`;
+    tabsHtml += `<button class="tab ${currentCat === 'mixed' ? 'active' : ''}" data-cat="mixed">Mixed Review <span class="tab-count">${QUESTIONS.length}</span></button>`;
+    CATEGORIES.forEach(c => {
+      const count = poolForCategory(c.id).length;
+      tabsHtml += `<button class="tab ${currentCat === c.id ? 'active' : ''}" data-cat="${c.id}">${c.label} <span class="tab-count">${count}</span></button>`;
+    });
+    tabsHtml += `</div>`;
+
+    let pageHtml = "";
+    if (!currentQuestion) {
+      pageHtml = `<div class="empty-state">No questions in this set yet — try another category.</div>`;
+    } else {
+      const catLabel = CATEGORIES.find(c => c.id === currentQuestion.cat).label;
+      const typeLabel = currentQuestion.type === "code" ? "write code" : currentQuestion.type === "trace" ? "trace / evaluate" : "define / explain";
+      const state = getQBoxState(currentQuestion.id);
+
+      pageHtml += `<p class="q-meta">${catLabel} · ${typeLabel}</p>`;
+      pageHtml += `<p class="q-meta" style="color:var(--red-pen); margin-top:-6px;">📖 Notes PDF: ${escapeHtml(currentQuestion.pg)}</p>`;
+      pageHtml += `<p class="q-prompt ${currentQuestion.type === 'code' || currentQuestion.type === 'trace' ? 'code' : ''}">${escapeHtml(currentQuestion.q)}</p>`;
+
+      if (!revealed) {
+        pageHtml += `<textarea id="answerBox" placeholder="Type your answer here — code, definition, or traced output... (or just hit 'I don't know yet' below, no shame in that)">${draftAnswer || ""}</textarea>`;
+        pageHtml += `<div class="btn-row">
+          <button class="btn-primary" id="checkBtn">Check my answer</button>
+          <button class="btn-ghost" id="peekBtn">I don't know yet — show me</button>
+          <button class="btn-ghost" id="skipBtn">Skip</button>
+        </div>`;
+      } else if (peeked && peekPhase === "reading") {
+        pageHtml += `<div class="reveal">
+          <p class="reveal-label">Model answer / key points</p>
+          <div class="reveal-body">${escapeHtml(currentQuestion.a)}</div>
+        </div>`;
+        pageHtml += `<div class="btn-row">
+          <button class="btn-primary" id="hideBtn">Got it — hide it, let me try from memory</button>
+        </div>`;
+      } else if (peeked && peekPhase === "recall") {
+        pageHtml += `<p class="q-meta">Answer is hidden now — write it from memory, no peeking back up</p>`;
+        pageHtml += `<textarea id="answerBox" placeholder="Type it from memory, as much as you can recall...">${draftAnswer || ""}</textarea>`;
+        pageHtml += `<div class="btn-row">
+          <button class="btn-primary" id="compareBtn">Compare to the answer</button>
+        </div>`;
+      } else if (peeked && peekPhase === "compare") {
+        pageHtml += `<p class="q-meta">What you wrote from memory</p>`;
+        pageHtml += `<div class="reveal-body" style="margin-bottom:14px;">${escapeHtml(draftAnswer || "(left blank)")}</div>`;
+        pageHtml += `<div class="reveal">
+          <p class="reveal-label">Model answer / key points</p>
+          <div class="reveal-body">${escapeHtml(currentQuestion.a)}</div>
+        </div>`;
+        pageHtml += `<div class="grade-row">`;
+        if (lastGrade === null) {
+          pageHtml += `<button class="stamp-btn stamp-got-it" id="gotItBtn">Close enough — got it</button>`;
+          pageHtml += `<button class="stamp-btn stamp-missed" id="missedBtn">Missed the key parts</button>`;
+        } else if (lastGrade === "correct") {
+          pageHtml += `<span class="stamp-feedback correct">✓ nailed it</span>`;
+          pageHtml += `<button class="btn-primary" id="nextBtn">Next question</button>`;
+        } else {
+          pageHtml += `<span class="stamp-feedback wrong">back in rotation</span>`;
+          pageHtml += `<button class="btn-primary" id="nextBtn">Next question</button>`;
+        }
+        pageHtml += `</div>`;
+      } else {
+        pageHtml += `<textarea id="answerBox" disabled>${draftAnswer || ""}</textarea>`;
+        pageHtml += `<div class="reveal">
+          <p class="reveal-label">Model answer / key points</p>
+          <div class="reveal-body">${escapeHtml(currentQuestion.a)}</div>
+        </div>`;
+        pageHtml += `<div class="grade-row">`;
+        if (lastGrade === null) {
+          pageHtml += `<button class="stamp-btn stamp-got-it" id="gotItBtn">Got it</button>`;
+          pageHtml += `<button class="stamp-btn stamp-missed" id="missedBtn">Missed it</button>`;
+        } else if (lastGrade === "correct") {
+          pageHtml += `<span class="stamp-feedback correct">✓ nailed it</span>`;
+          pageHtml += `<button class="btn-primary" id="nextBtn">Next question</button>`;
+        } else {
+          pageHtml += `<span class="stamp-feedback wrong">back in rotation</span>`;
+          pageHtml += `<button class="btn-primary" id="nextBtn">Next question</button>`;
+        }
+        pageHtml += `</div>`;
+      }
+
+      let dots = "";
+      for (let i = 1; i <= MAX_BOX; i++) {
+        dots += `<span class="box-dot ${i <= state.box ? 'filled' : ''}"></span>`;
+      }
+      pageHtml += `<div class="box-indicator">Familiarity<span class="box-dots">${dots}</span> ${state.attempts > 0 ? `· seen ${state.attempts}x, ${state.correct} correct` : "· new"}</div>`;
+    }
+
+    app.innerHTML = `
+      <div class="cover">
+        <p class="cover-eyebrow">CMSC131 Exemption Exam Prep</p>
+        <h1 class="cover-title">Drill Booklet</h1>
+        <p class="cover-sub">Type it out. Check it. Mark it. Repeat.</p>
+        <div class="stats-row">
+          <div class="stat-tile"><div class="stat-num">${g.attempts}</div><div class="stat-label">Attempts</div></div>
+          <div class="stat-tile"><div class="stat-num">${accuracy}%</div><div class="stat-label">Accuracy</div></div>
+          <div class="stat-tile"><div class="stat-num">${g.streak}</div><div class="stat-label">Streak</div></div>
+          <div class="stat-tile"><div class="stat-num">${totalMastered}/${QUESTIONS.length}</div><div class="stat-label">Mastered</div></div>
+        </div>
+      </div>
+      ${tabsHtml}
+      <div class="page">
+        ${pageHtml}
+      </div>
+      <div class="footer-bar">
+        <span></span>
+        <button class="reset-link" id="resetBtn">reset all progress</button>
+      </div>
+    `;
+
+    attachHandlers();
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  let draftAnswer = "";
+  let lastGrade = null;
+  let peeked = false;
+  let peekPhase = null; // 'reading' | 'recall' | 'compare'
+
+  function attachHandlers() {
+    document.querySelectorAll(".tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentCat = btn.dataset.cat;
+        draftAnswer = "";
+        lastGrade = null;
+        revealed = false;
+        peeked = false;
+        peekPhase = null;
+        currentQuestion = pickNextQuestion(currentCat);
+        render();
+      });
+    });
+
+    const answerBox = document.getElementById("answerBox");
+    if (answerBox && (!revealed || (peeked && peekPhase === "recall"))) {
+      answerBox.addEventListener("input", (e) => { draftAnswer = e.target.value; });
+    }
+
+    const checkBtn = document.getElementById("checkBtn");
+    if (checkBtn) {
+      checkBtn.addEventListener("click", () => {
+        revealed = true;
+        peeked = false;
+        peekPhase = null;
+        lastGrade = null;
+        render();
+      });
+    }
+
+    const peekBtn = document.getElementById("peekBtn");
+    if (peekBtn) {
+      peekBtn.addEventListener("click", () => {
+        revealed = true;
+        peeked = true;
+        peekPhase = "reading";
+        draftAnswer = "";
+        render();
+      });
+    }
+
+    const hideBtn = document.getElementById("hideBtn");
+    if (hideBtn) {
+      hideBtn.addEventListener("click", () => {
+        peekPhase = "recall";
+        draftAnswer = "";
+        render();
+      });
+    }
+
+    const compareBtn = document.getElementById("compareBtn");
+    if (compareBtn) {
+      compareBtn.addEventListener("click", () => {
+        peekPhase = "compare";
+        render();
+      });
+    }
+
+    const skipBtn = document.getElementById("skipBtn");
+    if (skipBtn) {
+      skipBtn.addEventListener("click", () => {
+        draftAnswer = "";
+        peeked = false;
+        peekPhase = null;
+        currentQuestion = pickNextQuestion(currentCat);
+        render();
+      });
+    }
+
+    const gotItBtn = document.getElementById("gotItBtn");
+    if (gotItBtn) {
+      gotItBtn.addEventListener("click", async () => {
+        const state = getQBoxState(currentQuestion.id);
+        state.attempts++;
+        state.correct++;
+        state.box = Math.min(MAX_BOX, state.box + 1);
+        progress.global.attempts++;
+        progress.global.correct++;
+        progress.global.streak++;
+        progress.global.longest = Math.max(progress.global.longest, progress.global.streak);
+        lastGrade = "correct";
+        await saveProgress();
+        render();
+      });
+    }
+
+    const missedBtn = document.getElementById("missedBtn");
+    if (missedBtn) {
+      missedBtn.addEventListener("click", async () => {
+        const state = getQBoxState(currentQuestion.id);
+        state.attempts++;
+        state.box = 1;
+        progress.global.attempts++;
+        progress.global.streak = 0;
+        lastGrade = "wrong";
+        await saveProgress();
+        render();
+      });
+    }
+
+    const nextBtn = document.getElementById("nextBtn");
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        draftAnswer = "";
+        lastGrade = null;
+        revealed = false;
+        peeked = false;
+        peekPhase = null;
+        currentQuestion = pickNextQuestion(currentCat);
+        render();
+      });
+    }
+
+    const resetBtn = document.getElementById("resetBtn");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", async () => {
+        if (confirm("Reset ALL progress? This clears every question's familiarity level and your overall stats. This can't be undone.")) {
+          progress = defaultProgress();
+          await saveProgress();
+          peeked = false;
+          peekPhase = null;
+          currentQuestion = pickNextQuestion(currentCat);
+          render();
+        }
+      });
+    }
+  }
+
+  async function init() {
+    progress = await loadProgress();
+    currentQuestion = pickNextQuestion(currentCat);
+    render();
+  }
+
+  init();
+})();
+</script>
 </body>
 </html>
