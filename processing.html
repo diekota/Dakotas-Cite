@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>P5.js</title>
-    <script src = "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+    <!-- Fixed: Points directly to the p5.js library CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
     <h1>Testing</h1>
 
-    <div id = "Sketch-container"></div>
+    <!-- Fixed: Matched lowercase ID with sketch.js -->
+    <div id="sketch-container"></div>
     <p>Sketch located here</p>
 
+    <!-- Make sure sketch.js path matches your file structure -->
+    <!-- Use "sketch.js" if it's in the same folder, or "./sketch/sketch.js" if inside a subfolder -->
     <script src="sketch.js"></script>
-    
 </body>
 </html>
